@@ -1,5 +1,15 @@
-# py-package-download-forecast
+---
+title: PyPI Download Forecast
+emoji: 📈
+colorFrom: blue
+colorTo: yellow
+sdk: gradio
+sdk_version: 3.16.1
+app_file: app/app.py
+pinned: false 
+---
 
+# py-package-download-forecast
 
 
 ## Reference
