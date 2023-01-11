@@ -58,6 +58,7 @@ class ModelStore:
 class App:
     def __init__(self):
         token = os.getenv("GITHUB_TOKEN")
+        # logger.debug(token)
         self.model_store = ModelStore(conf.username, conf.repo_name, token).load_models()
 
     def package_forecast(self, package):
@@ -81,7 +82,7 @@ inputs = [
 ]
 outputs = gr.Plot()
 
-demo = gr.Interface(
+app = gr.Interface(
     fn=App().package_forecast,
     inputs=inputs,
     outputs=outputs,
@@ -90,4 +91,4 @@ demo = gr.Interface(
 )
 
 if __name__ == "__main__":
-    demo.launch()
+    app.launch()

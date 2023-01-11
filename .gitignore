@@ -5,6 +5,9 @@ temp/
 flagged/
 gradio_cached_examples
 
+#
+*.out
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
