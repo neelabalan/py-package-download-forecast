@@ -1,0 +1,5 @@
+packages = ["fastapi", "flask", "requests", "pytorch", "tensorflow"]
+username = "neelabalan"
+repo_name = "artifacts_test"
+forecast_days = 30
+m_values = [3, 6]

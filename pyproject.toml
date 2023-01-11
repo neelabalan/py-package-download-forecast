@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "py-package-download-forecast"
+version = "0.1.0"
+description = "Python PyPi package forecast application"
+authors = ["neelabalan <neelabalan.n@outlook.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "py_package_download_forecast"}]
+
+[tool.poetry.dependencies]
+python = ">=3.8, <3.11"
+pypistats = "1.2.1"
+gradio = "3.16.1"
+plotly = "5.11.0"
+toml-config= {git = "https://github.com/neelabalan/toml_config.git", rev = "main"}
+numpy = "1.24.1"
+pmdarima = "2.0.2"
+loguru = "0.6.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "22.12.0"
+isort = "5.11.4"
+pre-commit = "2.21.0"
+seaborn = "0.12.2"
+ipykernel = "^6.20.1"
+nbformat = "^5.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line-length = 119
+
+[tool.pylint]
+max-line-length = 119
+disable = ["wrong-import-position", "missing-module-docstring", "too-few-public-methods"]
+good-names = ["df", "id", "ex"]
+
+[tool.isort]
+force_single_line = true
+profile = "black"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
