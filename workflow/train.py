@@ -1,5 +1,5 @@
-import pickle
 import os
+import pickle
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -10,10 +10,10 @@ import pmdarima as pm
 from loguru import logger
 from pmdarima.model_selection import train_test_split
 
+from conf import conf
 from utils import calc_rmse
 from utils import forecast
 from utils import get_data
-from conf import conf
 
 
 def tune(y: Union[np.array, pd.Series]) -> Tuple[int, float]:

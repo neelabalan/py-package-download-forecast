@@ -1,7 +1,7 @@
-name: upload_artifact 
+name: upload_artifact
 on:
-  # push:
-    # branches: [ main ]
+  push:
+    branches: [ main ]
   schedule:
     - cron:  '0 0 * * 0'
 jobs:
@@ -25,3 +25,10 @@ jobs:
         with:
           name: models
           path: /tmp/models/*.pkl
+      - name: Ask gradio to update models
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+      # call /update_models GET Request
+        run: |
+          export PYTHONPATH=.
+          python workflow/update_models.py

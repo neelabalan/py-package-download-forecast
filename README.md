@@ -6,7 +6,7 @@ colorTo: yellow
 sdk: gradio
 sdk_version: 3.16.1
 app_file: app/app.py
-pinned: false 
+pinned: false
 ---
 
 > HuggingFace Spaces YAML Front matter config
@@ -42,7 +42,7 @@ ___
 # Set of packages for which model is trained and downloads is forecasted
 packages = ["fastapi", "flask", "requests", "pytorch", "tensorflow"]
 
-# github username 
+# github username
 username = "neelabalan"
 
 # repository name of project

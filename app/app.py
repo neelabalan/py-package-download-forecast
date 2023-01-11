@@ -1,18 +1,35 @@
+import os
 import pickle
 import zipfile
+from datetime import datetime
+from typing import Union
 
-import pandas as pd
 import gradio as gr
+import pandas as pd
 import plotly.express as px
 import requests
+import uvicorn
+from fastapi import FastAPI
+from fastapi import Header
 from loguru import logger
 
 from conf import conf
 from utils import get_data
-import os
+
+fast_api = FastAPI()
+
+
+MODELS = {}
+TITLE = ""
+
+
+def convert_to_apt_datetime_string(datestr):
+    return datetime.strftime(datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%SZ"), "%Y-%m-%d")
 
 
 class ModelStore:
+    global MODELS
+
     def __init__(self, username, repo_name, token):
         self.headers = {
             "Accept": "application/vnd.github+json",
@@ -20,7 +37,6 @@ class ModelStore:
             "X-GitHub-Api-Version": "2022-11-28",
         }
         self.github_url = f"https://api.github.com/repos/{username}/{repo_name}/actions/artifacts"
-        self.models = {}
 
     def __download_models(self):
         recent_artifact = self.__get_latest_artifact_data()
@@ -37,9 +53,13 @@ class ModelStore:
         z.extractall("/tmp/models/")
 
     def __get_latest_artifact_data(self):
+        global TITLE
         response = requests.get(self.github_url, headers=self.headers)
         artifact_data = response.json()
         logger.info(artifact_data)
+        # update title with last updated date
+        last_updated_at = artifact_data["artifacts"][0]["updated_at"]
+        TITLE = f"Last model updated on {convert_to_apt_datetime_string(last_updated_at)}<br><br>Forecast for "
         return artifact_data["artifacts"][0]
 
     def load_models(self):
@@ -47,35 +67,39 @@ class ModelStore:
         for package in conf.packages:
             with open(f"/tmp/models/{package}.pkl", "rb") as pkl:
                 logger.info(f"loading model {package}.pkl")
-                self.models.update({package: pickle.load(pkl)})
+                MODELS.update({package: pickle.load(pkl)})
         return self
 
     def get(self, package):
-        if self.models:
-            return self.models.get(package)
+        if MODELS:
+            return MODELS.get(package)
 
 
 class App:
     def __init__(self):
-        token = os.getenv("GITHUB_TOKEN")
+        token = os.getenv("API_TOKEN")
         # logger.debug(token)
         self.model_store = ModelStore(conf.username, conf.repo_name, token).load_models()
 
     def package_forecast(self, package):
+        global TITLE
         model = self.model_store.get(package)
         df = get_data(package)
         forecasts = model.predict(conf.forecast_days)
         df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True)
 
-        forecast_duration = pd.date_range(df["date"].max(), periods=conf.forecast_days, freq='D')
+        forecast_duration = pd.date_range(df["date"].max(), periods=conf.forecast_days, freq="D")
         fig = px.line(df, x=df["date"], y="downloads", title="Forecast")
-        fig.add_scatter(x=forecast_duration, y=forecasts, mode="lines", name="Forecast", line=dict(width=2, color="green"))
+        fig.add_scatter(
+            x=forecast_duration, y=forecasts, mode="lines", name="Forecast", line=dict(width=2, color="green")
+        )
         fig.update_layout(
-            title="Forecast for " + package,
+            title=TITLE + package,
             xaxis_title="Date",
             yaxis_title="Downloads",
         )
         return fig
+
 
 inputs = [
     gr.Dropdown(conf.packages, label="Package"),
@@ -90,5 +114,20 @@ app = gr.Interface(
     cache_examples=True,
 )
 
+
+@fast_api.get("/update_models")
+def update_to_lastest_models(token: Union[str, None] = Header(default=None)):
+    global MODELS
+    if os.getenv("GITHUB_TOKEN") == token:
+        model_store = ModelStore(conf.username, conf.repo_name, token).load_models()
+        logger.info("models updated successfully")
+        return {"message": "models updated successfully"}
+    else:
+        return {"message": "No or wrong token passed"}
+
+
+fast_api = gr.mount_gradio_app(fast_api, app, path="")
+
+
 if __name__ == "__main__":
-    app.launch()
+    uvicorn.run(fast_api, host="0.0.0.0", port=7860)

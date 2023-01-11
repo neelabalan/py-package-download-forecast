@@ -3,3 +3,5 @@ username = "neelabalan"
 repo_name = "py-package-download-forecast"
 forecast_days = 30
 m_values = [3, 6]
+base_hf_url = "https://neelabalan-py-package-download-forecast.hf.space"
+sleep=60
