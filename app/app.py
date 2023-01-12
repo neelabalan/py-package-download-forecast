@@ -77,7 +77,7 @@ class ModelStore:
 
 class App:
     def __init__(self):
-        token = os.getenv("API_TOKEN")
+        token = os.getenv("GITHUB_TOKEN")
         # logger.debug(token)
         self.model_store = ModelStore(conf.username, conf.repo_name, token).load_models()
 
