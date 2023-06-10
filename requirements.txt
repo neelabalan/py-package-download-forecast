@@ -1,5 +1,5 @@
 pypistats==1.2.1
-gradio==3.16.1
+gradio==3.34.0
 plotly==5.11.0
 numpy==1.24.1
 pmdarima==2.0.2
