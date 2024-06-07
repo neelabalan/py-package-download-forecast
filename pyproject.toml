@@ -10,7 +10,7 @@ packages = [{include = "py_package_download_forecast"}]
 [tool.poetry.dependencies]
 python = ">=3.8, <3.11"
 pypistats = "1.2.1"
-gradio = "4.19.2"
+gradio = "4.36.0"
 plotly = "5.11.0"
 toml-config= {git = "https://github.com/neelabalan/toml_config.git", rev = "main"}
 numpy = "1.24.1"
